@@ -1,9 +1,6 @@
-/* Configuración del Fondo y Fuente Base */
 body {
     font-family: 'Montserrat', sans-serif;
     text-align: center;
-    
-    /* Imagen de fondo fija con capa de oscurecimiento */
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('IMG1.jpg');
     background-size: cover;
     background-attachment: fixed;
@@ -12,7 +9,6 @@ body {
     min-height: 100vh;
 }
 
-/* Tipografía de Títulos */
 h1, h2, h3, .card-title, .intro-titulo {
     font-family: 'Quicksand', sans-serif;
     font-weight: 700;
@@ -22,7 +18,23 @@ h1, h2, h3, .card-title, .intro-titulo {
     text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
 }
 
-/* Estilos de la Sección de Introducción */
+/* Buscador Estilizado */
+#buscador {
+    border-radius: 30px;
+    border: 3px solid #ffc107;
+    padding: 12px 25px;
+}
+
+/* Botón Música */
+#btnMusica {
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .intro-titulo {
     color: #2c3e50;
     border-left: 5px solid #ffc107;
@@ -35,7 +47,6 @@ h1, h2, h3, .card-title, .intro-titulo {
     line-height: 1.6;
 }
 
-/* Estilos de las Tarjetas (Basado en tu código original) */
 .card {
     margin: 15px;
     border: none;
@@ -51,8 +62,4 @@ h1, h2, h3, .card-title, .intro-titulo {
 
 .card-body {
     background-color: #ffffff;
-}
-
-#zona-aleatoria {
-    border: none;
 }
