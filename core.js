@@ -1,103 +1,151 @@
-/* Estilos Generales */
-body {
-    font-family: 'Montserrat', sans-serif;
-    text-align: center;
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('IMG1.jpg');
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    color: white;
+const boton = document.getElementById('nuevaPeli');
+const contenedorAleatorio = document.getElementById('peli-destacada');
+const contenedorCatalogo = document.getElementById('peliculas-container');
+const contenedorFavoritos = document.getElementById('favoritos-container');
+const buscador = document.getElementById('buscador');
+const btnMusica = document.getElementById('btnMusica');
+const musica = document.getElementById('musicaGhibli');
+const iconoMusica = document.getElementById('iconoMusica');
+
+const urlGhibli = 'https://ghibliapi.vercel.app/films';
+let todasLasPelis = []; 
+
+// --- LÓGICA DE FAVORITOS (Inspirada en recetas) ---
+let favoritos = JSON.parse(localStorage.getItem('ghibli_favs')) || [];
+
+function cargarContenido() {
+    fetch(urlGhibli)
+        .then(respuesta => respuesta.json())
+        .then(datos => {
+            todasLasPelis = datos; 
+            mostrarCatalogo(todasLasPelis);
+            mostrarAleatoria(todasLasPelis);
+            mostrarFavoritos();
+
+            boton.addEventListener('click', () => {
+                mostrarAleatoria(todasLasPelis);
+            });
+
+            // Lógica del BUSCADOR
+            buscador.addEventListener('input', (e) => {
+                const texto = e.target.value.toLowerCase();
+                const filtradas = todasLasPelis.filter(peli => {
+                    const nombreMofa = aplicarNombreMofa(peli.title).toLowerCase();
+                    const director = peli.director.toLowerCase();
+                    return nombreMofa.includes(texto) || director.includes(texto);
+                });
+                mostrarCatalogo(filtradas);
+            });
+
+            intentarReproducir();
+        })
+        .catch(error => console.error("Error al conectar con la API:", error));
 }
 
-h1, h2, h3, .card-title, .intro-titulo {
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 700;
+// --- TUS NOMBRES "MOFA" ---
+function aplicarNombreMofa(originalTitle) {
+    const mofas = {
+        "Castle in the Sky": "Laputa",
+        "The Wind Rises": "Soy él, si hubiese escogido aviación",
+        "Grave of the Fireflies": "Llore mucho :(",
+        "Spirited Away": "Mis padres son unos cerdos y el negro es el malo",
+        "Porco Rosso": "Es menor donde vas",
+        "Princess Mononoke": "Solo con la izquierda",
+        "My Neighbor Totoro": "Entiendelo, esta muerta",
+        "Howl's Moving Castle": "Top mejores abuelas"
+    };
+    return mofas[originalTitle] || originalTitle;
 }
 
-.text-white.shadow-lg {
-    text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
+// --- FUNCIÓN PARA GENERAR EL HTML (SOLUCIÓN PARA QUE NO SE CORTE) ---
+function crearCardHTML(peli, esFavorito) {
+    const titulo = aplicarNombreMofa(peli.title);
+    
+    // Botón dinámico
+    const btnAccion = esFavorito
+        ? `<button class="btn btn-danger btn-sm w-100" onclick="eliminarFavorito('${peli.id}')">Quitar de favoritos</button>`
+        : `<button class="btn btn-warning btn-sm w-100 fw-bold" onclick="agregarFavorito('${peli.id}')">⭐ Añadir a favoritos</button>`;
+
+    return `
+        <div class="col-md-4 d-flex justify-content-center mb-4">
+            <div class="card shadow" style="width: 18rem;">
+                <div class="card-img-container" style="background-color: #222; height: 380px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <img src="${peli.image}" class="card-img-top" alt="${titulo}" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;">
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-dark">${titulo}</h5>
+                    <p class="card-text text-secondary small text-start flex-grow-1">
+                        <strong>Director:</strong> ${peli.director}<br>
+                        <strong>Año:</strong> ${peli.release_date}
+                    </p>
+                    <div class="mt-auto">
+                        ${btnAccion}
+                    </div>
+                </div>
+            </div>
+        </div>`;
 }
 
-/* Buscador Estilizado */
-#buscador {
-    border-radius: 30px;
-    border: 3px solid #ffc107;
-    padding: 12px 25px;
+// --- RENDERIZADO DE SECCIONES ---
+function mostrarCatalogo(peliculas) {
+    contenedorCatalogo.innerHTML = "";
+    peliculas.forEach(peli => {
+        contenedorCatalogo.innerHTML += crearCardHTML(peli, false);
+    });
 }
 
-/* Botón Música */
-#btnMusica {
-    width: 50px;
-    height: 50px;
-    font-size: 1.4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+function mostrarFavoritos() {
+    if (!contenedorFavoritos) return;
+    contenedorFavoritos.innerHTML = "";
+    if (favoritos.length === 0) {
+        contenedorFavoritos.innerHTML = "<p class='text-muted'>Aún no tienes películas favoritas.</p>";
+        return;
+    }
+    favoritos.forEach(peli => {
+        contenedorFavoritos.innerHTML += crearCardHTML(peli, true);
+    });
 }
 
-/* Sección de Intro */
-.intro-titulo {
-    color: #2c3e50;
-    border-left: 5px solid #ffc107;
-    padding-left: 15px;
+function mostrarAleatoria(peliculas) {
+    const indice = Math.floor(Math.random() * peliculas.length);
+    const peliSuerte = peliculas[indice];
+    contenedorAleatorio.innerHTML = crearCardHTML(peliSuerte, false);
 }
 
-.intro-texto {
-    font-size: 1.1rem;
-    color: #333;
-    line-height: 1.6;
+// --- ACCIONES FAVORITOS ---
+window.agregarFavorito = function(id) {
+    const peli = todasLasPelis.find(p => p.id === id);
+    if (peli && !favoritos.some(f => f.id === id)) {
+        favoritos.push(peli);
+        localStorage.setItem('ghibli_favs', JSON.stringify(favoritos));
+        mostrarFavoritos();
+    }
 }
 
-/* SECCIÓN DE FAVORITOS */
-#seccion-favoritos {
-    border: 3px solid #ffc107;
-    background-color: rgba(248, 249, 250, 0.9);
+window.eliminarFavorito = function(id) {
+    favoritos = favoritos.filter(f => f.id !== id);
+    localStorage.setItem('ghibli_favs', JSON.stringify(favoritos));
+    mostrarFavoritos();
 }
 
-/* TARJETAS (Donde está el cambio de la imagen) */
-.card {
-    margin: 15px;
-    border: none;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    transition: transform 0.3s ease;
-    background-color: white;
+// --- LÓGICA DE MÚSICA ---
+function toggleMusica() {
+    if (musica.paused) {
+        musica.play();
+        iconoMusica.innerText = "🔊";
+    } else {
+        musica.pause();
+        iconoMusica.innerText = "🔈";
+    }
 }
 
-.card:hover {
-    transform: translateY(-10px);
+function intentarReproducir() {
+    musica.play().catch(() => {
+        iconoMusica.innerText = "🔈";
+    });
 }
 
-/* CAMBIO CLAVE: Aquí es donde evitamos que la imagen se corte */
-.card-img-top {
-    height: 350px;       /* Altura fija para que todas las tarjetas midan igual */
-    object-fit: contain; /* CAMBIO: "contain" hace que la imagen se vea ENTERA */
-    background-color: #f0f0f0; /* Fondo gris suave por si la imagen es estrecha */
-    padding: 10px;       /* Un poco de aire para que no pegue a los bordes */
-}
+btnMusica.addEventListener('click', toggleMusica);
 
-.card-body {
-    background-color: #ffffff;
-    padding: 1.25rem;
-}
-
-/* Botones de las tarjetas */
-.btn-warning {
-    background-color: #ffc107;
-    border: none;
-    color: #000;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    border: none;
-}
-
-/* Separador */
-hr.border-white {
-    opacity: 0.5;
-    border-width: 2px;
-}
+// Iniciar aplicación
+cargarContenido();
