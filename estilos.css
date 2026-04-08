@@ -1,3 +1,4 @@
+/* Estilos Generales */
 body {
     font-family: 'Montserrat', sans-serif;
     text-align: center;
@@ -7,6 +8,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     min-height: 100vh;
+    color: white;
 }
 
 h1, h2, h3, .card-title, .intro-titulo {
@@ -35,6 +37,7 @@ h1, h2, h3, .card-title, .intro-titulo {
     justify-content: center;
 }
 
+/* Sección de Intro */
 .intro-titulo {
     color: #2c3e50;
     border-left: 5px solid #ffc107;
@@ -47,12 +50,13 @@ h1, h2, h3, .card-title, .intro-titulo {
     line-height: 1.6;
 }
 
-/* Sección Favoritos */
+/* SECCIÓN DE FAVORITOS */
 #seccion-favoritos {
     border: 3px solid #ffc107;
+    background-color: rgba(248, 249, 250, 0.9);
 }
 
-/* Tarjetas Generales */
+/* TARJETAS (Donde está el cambio de la imagen) */
 .card {
     margin: 15px;
     border: none;
@@ -60,18 +64,40 @@ h1, h2, h3, .card-title, .intro-titulo {
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0,0,0,0.4);
     transition: transform 0.3s ease;
+    background-color: white;
 }
 
 .card:hover {
     transform: translateY(-10px);
 }
 
-.card-body {
-    background-color: #ffffff;
+/* CAMBIO CLAVE: Aquí es donde evitamos que la imagen se corte */
+.card-img-top {
+    height: 350px;       /* Altura fija para que todas las tarjetas midan igual */
+    object-fit: contain; /* CAMBIO: "contain" hace que la imagen se vea ENTERA */
+    background-color: #f0f0f0; /* Fondo gris suave por si la imagen es estrecha */
+    padding: 10px;       /* Un poco de aire para que no pegue a los bordes */
 }
 
-/* Ajuste para imágenes de tarjetas */
-.card-img-top {
-    height: 300px;
-    object-fit: cover;
+.card-body {
+    background-color: #ffffff;
+    padding: 1.25rem;
+}
+
+/* Botones de las tarjetas */
+.btn-warning {
+    background-color: #ffc107;
+    border: none;
+    color: #000;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+/* Separador */
+hr.border-white {
+    opacity: 0.5;
+    border-width: 2px;
 }
