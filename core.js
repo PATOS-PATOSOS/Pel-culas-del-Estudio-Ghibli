@@ -5,45 +5,25 @@ const contenedorFavoritos = document.getElementById('favoritos-container');
 const buscador = document.getElementById('buscador');
 const btnMusica = document.getElementById('btnMusica');
 const musica = document.getElementById('musicaGhibli');
-const iconoMusica = document.getElementById('iconoMusica');
 
 const urlGhibli = 'https://ghibliapi.vercel.app/films';
 let todasLasPelis = []; 
 
-// --- LÓGICA DE FAVORITOS (Inspirada en recetas) ---
+// LÓGICA FAVORITOS
 let favoritos = JSON.parse(localStorage.getItem('ghibli_favs')) || [];
 
 function cargarContenido() {
     fetch(urlGhibli)
-        .then(respuesta => respuesta.json())
+        .then(res => res.json())
         .then(datos => {
             todasLasPelis = datos; 
             mostrarCatalogo(todasLasPelis);
             mostrarAleatoria(todasLasPelis);
             mostrarFavoritos();
-
-            boton.addEventListener('click', () => {
-                mostrarAleatoria(todasLasPelis);
-            });
-
-            // Lógica del BUSCADOR
-            buscador.addEventListener('input', (e) => {
-                const texto = e.target.value.toLowerCase();
-                const filtradas = todasLasPelis.filter(peli => {
-                    const nombreMofa = aplicarNombreMofa(peli.title).toLowerCase();
-                    const director = peli.director.toLowerCase();
-                    return nombreMofa.includes(texto) || director.includes(texto);
-                });
-                mostrarCatalogo(filtradas);
-            });
-
-            intentarReproducir();
-        })
-        .catch(error => console.error("Error al conectar con la API:", error));
+        });
 }
 
-// --- TUS NOMBRES "MOFA" ---
-function aplicarNombreMofa(originalTitle) {
+function aplicarNombreMofa(title) {
     const mofas = {
         "Castle in the Sky": "Laputa",
         "The Wind Rises": "Soy él, si hubiese escogido aviación",
@@ -54,98 +34,77 @@ function aplicarNombreMofa(originalTitle) {
         "My Neighbor Totoro": "Entiendelo, esta muerta",
         "Howl's Moving Castle": "Top mejores abuelas"
     };
-    return mofas[originalTitle] || originalTitle;
+    return mofas[title] || title;
 }
 
-// --- FUNCIÓN PARA GENERAR EL HTML (SOLUCIÓN PARA QUE NO SE CORTE) ---
-function crearCardHTML(peli, esFavorito) {
+// Función UNIFICADA para que la foto nunca cambie de estilo
+function crearCard(peli, esFavorito) {
     const titulo = aplicarNombreMofa(peli.title);
-    
-    // Botón dinámico
-    const btnAccion = esFavorito
-        ? `<button class="btn btn-danger btn-sm w-100" onclick="eliminarFavorito('${peli.id}')">Quitar de favoritos</button>`
-        : `<button class="btn btn-warning btn-sm w-100 fw-bold" onclick="agregarFavorito('${peli.id}')">⭐ Añadir a favoritos</button>`;
+    const btn = esFavorito 
+        ? `<button class="btn btn-danger w-100" onclick="eliminarFavorito('${peli.id}')">Quitar</button>`
+        : `<button class="btn btn-warning w-100 fw-bold" onclick="agregarFavorito('${peli.id}')">⭐ Favorita</button>`;
 
     return `
         <div class="col-md-4 d-flex justify-content-center mb-4">
             <div class="card shadow" style="width: 18rem;">
-                <div class="card-img-container" style="background-color: #222; height: 380px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    <img src="${peli.image}" class="card-img-top" alt="${titulo}" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;">
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title text-dark">${titulo}</h5>
-                    <p class="card-text text-secondary small text-start flex-grow-1">
-                        <strong>Director:</strong> ${peli.director}<br>
-                        <strong>Año:</strong> ${peli.release_date}
-                    </p>
-                    <div class="mt-auto">
-                        ${btnAccion}
-                    </div>
+                <img src="${peli.image}" class="card-img-top" alt="Portada">
+                <div class="card-body">
+                    <h5 class="card-title">${titulo}</h5>
+                    <p class="card-text small text-secondary">${peli.director} (${peli.release_date})</p>
+                    ${btn}
                 </div>
             </div>
         </div>`;
 }
 
-// --- RENDERIZADO DE SECCIONES ---
-function mostrarCatalogo(peliculas) {
+function mostrarCatalogo(lista) {
     contenedorCatalogo.innerHTML = "";
-    peliculas.forEach(peli => {
-        contenedorCatalogo.innerHTML += crearCardHTML(peli, false);
-    });
+    lista.forEach(peli => contenedorCatalogo.innerHTML += crearCard(peli, false));
 }
 
 function mostrarFavoritos() {
-    if (!contenedorFavoritos) return;
     contenedorFavoritos.innerHTML = "";
     if (favoritos.length === 0) {
-        contenedorFavoritos.innerHTML = "<p class='text-muted'>Aún no tienes películas favoritas.</p>";
+        contenedorFavoritos.innerHTML = "<p>No tienes favoritas guardadas.</p>";
         return;
     }
-    favoritos.forEach(peli => {
-        contenedorFavoritos.innerHTML += crearCardHTML(peli, true);
-    });
+    favoritos.forEach(peli => contenedorFavoritos.innerHTML += crearCard(peli, true));
 }
 
-function mostrarAleatoria(peliculas) {
-    const indice = Math.floor(Math.random() * peliculas.length);
-    const peliSuerte = peliculas[indice];
-    contenedorAleatorio.innerHTML = crearCardHTML(peliSuerte, false);
+function mostrarAleatoria(lista) {
+    const peli = lista[Math.floor(Math.random() * lista.length)];
+    // AQUÍ: Usamos crearCard para que use la misma foto de portada (peli.image)
+    contenedorAleatorio.innerHTML = crearCard(peli, false);
 }
 
-// --- ACCIONES FAVORITOS ---
-window.agregarFavorito = function(id) {
+function agregarFavorito(id) {
     const peli = todasLasPelis.find(p => p.id === id);
-    if (peli && !favoritos.some(f => f.id === id)) {
+    if (!favoritos.some(f => f.id === id)) {
         favoritos.push(peli);
         localStorage.setItem('ghibli_favs', JSON.stringify(favoritos));
         mostrarFavoritos();
     }
 }
 
-window.eliminarFavorito = function(id) {
+function eliminarFavorito(id) {
     favoritos = favoritos.filter(f => f.id !== id);
     localStorage.setItem('ghibli_favs', JSON.stringify(favoritos));
     mostrarFavoritos();
 }
 
-// --- LÓGICA DE MÚSICA ---
-function toggleMusica() {
-    if (musica.paused) {
-        musica.play();
-        iconoMusica.innerText = "🔊";
-    } else {
-        musica.pause();
-        iconoMusica.innerText = "🔈";
-    }
-}
+// Buscador e Interfaz
+buscador.addEventListener('input', (e) => {
+    const texto = e.target.value.toLowerCase();
+    const filtradas = todasLasPelis.filter(p => 
+        p.title.toLowerCase().includes(texto) || p.director.toLowerCase().includes(texto)
+    );
+    mostrarCatalogo(filtradas);
+});
 
-function intentarReproducir() {
-    musica.play().catch(() => {
-        iconoMusica.innerText = "🔈";
-    });
-}
+btnMusica.addEventListener('click', () => {
+    if (musica.paused) { musica.play(); } else { musica.pause(); }
+});
 
-btnMusica.addEventListener('click', toggleMusica);
+boton.addEventListener('click', () => mostrarAleatoria(todasLasPelis));
 
-// Iniciar aplicación
 cargarContenido();
