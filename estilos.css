@@ -1,4 +1,4 @@
-/* Estilos Generales */
+/* --- ESTILOS GENERALES --- */
 body {
     font-family: 'Montserrat', sans-serif;
     text-align: center;
@@ -20,14 +20,14 @@ h1, h2, h3, .card-title, .intro-titulo {
     text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
 }
 
-/* Buscador Estilizado */
+/* --- BUSCADOR --- */
 #buscador {
     border-radius: 30px;
     border: 3px solid #ffc107;
     padding: 12px 25px;
 }
 
-/* Botón Música */
+/* --- BOTÓN MÚSICA --- */
 #btnMusica {
     width: 50px;
     height: 50px;
@@ -37,7 +37,7 @@ h1, h2, h3, .card-title, .intro-titulo {
     justify-content: center;
 }
 
-/* Sección de Intro */
+/* --- SECCIÓN INTRO --- */
 .intro-titulo {
     color: #2c3e50;
     border-left: 5px solid #ffc107;
@@ -50,18 +50,19 @@ h1, h2, h3, .card-title, .intro-titulo {
     line-height: 1.6;
 }
 
-/* SECCIÓN DE FAVORITOS */
+/* --- SECCIÓN FAVORITOS --- */
 #seccion-favoritos {
     border: 3px solid #ffc107;
     background-color: rgba(248, 249, 250, 0.9);
 }
 
-/* TARJETAS (Donde está el cambio de la imagen) */
+/* --- TARJETAS (CARTAS) --- */
 .card {
     margin: 15px;
     border: none;
     border-radius: 15px;
-    overflow: hidden;
+    /* Importante: quitamos el overflow hidden para que no corte la imagen si algo falla */
+    overflow: visible !important; 
     box-shadow: 0 10px 25px rgba(0,0,0,0.4);
     transition: transform 0.3s ease;
     background-color: white;
@@ -71,20 +72,26 @@ h1, h2, h3, .card-title, .intro-titulo {
     transform: translateY(-10px);
 }
 
-/* CAMBIO CLAVE: Aquí es donde evitamos que la imagen se corte */
+/* --- EL CAMBIO CLAVE PARA QUE NO SE CORTE LA IMAGEN --- */
 .card-img-top {
-    height: 350px;       /* Altura fija para que todas las tarjetas midan igual */
-    object-fit: contain; /* CAMBIO: "contain" hace que la imagen se vea ENTERA */
-    background-color: #f0f0f0; /* Fondo gris suave por si la imagen es estrecha */
-    padding: 10px;       /* Un poco de aire para que no pegue a los bordes */
+    width: 100% !important;
+    height: 350px !important;       /* Altura fija para que todas las cartas midan igual */
+    object-fit: contain !important; /* Muestra la imagen ENTERA sin zoom ni recortes */
+    object-position: center !important; /* Centra la imagen */
+    background-color: #f0f0f0;     /* Fondo gris para los huecos laterales de la portada */
+    padding: 10px;                  /* Espacio para que la foto no pegue al borde */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }
 
 .card-body {
     background-color: #ffffff;
     padding: 1.25rem;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
 }
 
-/* Botones de las tarjetas */
+/* --- BOTONES Y OTROS --- */
 .btn-warning {
     background-color: #ffc107;
     border: none;
@@ -96,7 +103,6 @@ h1, h2, h3, .card-title, .intro-titulo {
     border: none;
 }
 
-/* Separador */
 hr.border-white {
     opacity: 0.5;
     border-width: 2px;
