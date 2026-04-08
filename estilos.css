@@ -25,6 +25,7 @@ h1, h2, h3, .card-title, .intro-titulo {
     border-radius: 30px;
     border: 3px solid #ffc107;
     padding: 12px 25px;
+    color: #333;
 }
 
 /* --- BOTÓN MÚSICA --- */
@@ -53,7 +54,8 @@ h1, h2, h3, .card-title, .intro-titulo {
 /* --- SECCIÓN FAVORITOS --- */
 #seccion-favoritos {
     border: 3px solid #ffc107;
-    background-color: rgba(248, 249, 250, 0.9);
+    background-color: rgba(248, 249, 250, 0.95);
+    margin-top: 20px;
 }
 
 /* --- TARJETAS (CARTAS) --- */
@@ -61,8 +63,8 @@ h1, h2, h3, .card-title, .intro-titulo {
     margin: 15px;
     border: none;
     border-radius: 15px;
-    /* Importante: quitamos el overflow hidden para que no corte la imagen si algo falla */
-    overflow: visible !important; 
+    /* Evita que cualquier cosa dentro de la carta sobresalga */
+    overflow: hidden !important; 
     box-shadow: 0 10px 25px rgba(0,0,0,0.4);
     transition: transform 0.3s ease;
     background-color: white;
@@ -72,38 +74,39 @@ h1, h2, h3, .card-title, .intro-titulo {
     transform: translateY(-10px);
 }
 
-/* --- EL CAMBIO CLAVE PARA QUE NO SE CORTE LA IMAGEN --- */
+/* --- EL CAMBIO CLAVE PARA QUE NO SE CORTE NADA --- */
 .card-img-top {
+    display: block;
     width: 100% !important;
-    height: 350px !important;       /* Altura fija para que todas las cartas midan igual */
-    object-fit: contain !important; /* Muestra la imagen ENTERA sin zoom ni recortes */
-    object-position: center !important; /* Centra la imagen */
-    background-color: #f0f0f0;     /* Fondo gris para los huecos laterales de la portada */
-    padding: 10px;                  /* Espacio para que la foto no pegue al borde */
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
+    height: 400px !important;       /* Un poco más alto para que luzcan los pósters */
+    object-fit: contain !important; /* Muestra la imagen COMPLETA */
+    object-position: center !important; 
+    background-color: #ebebeb !important; /* Fondo neutro por si la peli es estrecha */
+    padding: 5px;                  /* Espacio de seguridad */
 }
 
 .card-body {
     background-color: #ffffff;
-    padding: 1.25rem;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
+    padding: 1rem;
+    border-top: 1px solid #eee;
 }
 
-/* --- BOTONES Y OTROS --- */
+/* --- BOTONES --- */
 .btn-warning {
     background-color: #ffc107;
     border: none;
     color: #000;
+    font-weight: 600;
 }
 
 .btn-danger {
     background-color: #dc3545;
     border: none;
+    font-weight: 600;
 }
 
+/* Separador */
 hr.border-white {
-    opacity: 0.5;
+    opacity: 0.6;
     border-width: 2px;
 }
