@@ -1,29 +1,49 @@
 const boton = document.getElementById('nuevaPeli');
 const contenedorAleatorio = document.getElementById('peli-destacada');
 const contenedorCatalogo = document.getElementById('peliculas-container');
-const contenedorFavoritos = document.getElementById('favoritos-container');
+const contenedorFavoritos = document.getElementById('favoritos-container'); // NUEVO
 const buscador = document.getElementById('buscador');
+const btnMusica = document.getElementById('btnMusica');
+const musica = document.getElementById('musicaGhibli');
+const iconoMusica = document.getElementById('iconoMusica');
 
 const urlGhibli = 'https://ghibliapi.vercel.app/films';
 let todasLasPelis = []; 
 
-// --- LÓGICA DE FAVORITOS (COMO EN RECETAS) ---
-let favoritos = JSON.parse(localStorage.getItem('ghibli_favoritos')) || [];
+// --- LÓGICA DE FAVORITOS (Basada en recetas) ---
+let favoritos = JSON.parse(localStorage.getItem('ghibli_favs')) || [];
 
 function cargarContenido() {
     fetch(urlGhibli)
-        .then(res => res.json())
+        .then(respuesta => respuesta.json())
         .then(datos => {
             todasLasPelis = datos; 
             mostrarCatalogo(todasLasPelis);
             mostrarAleatoria(todasLasPelis);
-            mostrarFavoritos(); 
-        });
+            mostrarFavoritos(); // Mostrar favoritas al cargar
+
+            boton.addEventListener('click', () => {
+                mostrarAleatoria(todasLasPelis);
+            });
+
+            // Lógica del BUSCADOR
+            buscador.addEventListener('input', (e) => {
+                const texto = e.target.value.toLowerCase();
+                const filtradas = todasLasPelis.filter(peli => 
+                    aplicarNombreMofa(peli.title).toLowerCase().includes(texto) || 
+                    peli.director.toLowerCase().includes(texto)
+                );
+                mostrarCatalogo(filtradas);
+            });
+
+            intentarReproducir();
+        })
+        .catch(error => console.error("Error al conectar con la API:", error));
 }
 
-// Función para tus nombres "Mofas"
-function obtenerNombreMofa(originalTitle) {
-    const nombres = {
+// --- FUNCIÓN PARA TUS NOMBRES MOFA (Centralizada) ---
+function aplicarNombreMofa(originalTitle) {
+    const mofas = {
         "Castle in the Sky": "Laputa",
         "The Wind Rises": "Soy él, si hubiese escogido aviación",
         "Grave of the Fireflies": "Llore mucho :(",
@@ -33,102 +53,103 @@ function obtenerNombreMofa(originalTitle) {
         "My Neighbor Totoro": "Entiendelo, esta muerta",
         "Howl's Moving Castle": "Top mejores abuelas"
     };
-    return nombres[originalTitle] || originalTitle;
+    return mofas[originalTitle] || originalTitle;
 }
 
-// Añadir a favoritos
+// --- GESTIÓN DE FAVORITOS ---
 function agregarFavorito(id) {
     const peli = todasLasPelis.find(p => p.id === id);
     if (!favoritos.some(f => f.id === id)) {
         favoritos.push(peli);
-        localStorage.setItem('ghibli_favoritos', JSON.stringify(favoritos));
+        localStorage.setItem('ghibli_favs', JSON.stringify(favoritos));
         mostrarFavoritos();
     }
 }
 
-// Quitar de favoritos
 function eliminarFavorito(id) {
     favoritos = favoritos.filter(f => f.id !== id);
-    localStorage.setItem('ghibli_favoritos', JSON.stringify(favoritos));
+    localStorage.setItem('ghibli_favs', JSON.stringify(favoritos));
     mostrarFavoritos();
 }
 
-// Pintar la sección de favoritos
 function mostrarFavoritos() {
     contenedorFavoritos.innerHTML = "";
     if (favoritos.length === 0) {
-        contenedorFavoritos.innerHTML = "<p class='text-muted'>No tienes pelis favoritas aún.</p>";
+        contenedorFavoritos.innerHTML = "<p class='text-muted'>No tienes pelis favoritas guardadas aún.</p>";
         return;
     }
     favoritos.forEach(peli => {
-        const titulo = obtenerNombreMofa(peli.title);
-        contenedorFavoritos.innerHTML += `
-            <div class="col-md-3">
-                <div class="card shadow-sm border-warning">
-                    <img src="${peli.image}" class="card-img-top" style="height: 150px; object-fit: cover;">
-                    <div class="card-body p-2">
-                        <h6 class="fw-bold text-dark small">${titulo}</h6>
-                        <button class="btn btn-danger btn-sm w-100" onclick="eliminarFavorito('${peli.id}')">Quitar</button>
-                    </div>
-                </div>
-            </div>`;
+        contenedorFavoritos.innerHTML += generarHTMLTarjerta(peli, true);
     });
 }
 
-// Catálogo general
-function mostrarCatalogo(lista) {
+// --- RENDERIZADO DE TARJETAS ---
+function mostrarCatalogo(peliculas) {
     contenedorCatalogo.innerHTML = "";
-    lista.forEach(peli => {
-        const titulo = obtenerNombreMofa(peli.title);
-        contenedorCatalogo.innerHTML += `
-            <div class="col-md-4 d-flex justify-content-center">
-                <div class="card shadow" style="width: 18rem; margin-bottom: 20px;">
-                    <img src="${peli.image}" class="card-img-top" alt="${titulo}">
-                    <div class="card-body">
-                        <h5 class="card-title text-dark">${titulo}</h5>
-                        <p class="card-text text-dark small">Director: ${peli.director}<br>Año: ${peli.release_date}</p>
-                        <button class="btn btn-warning w-100 fw-bold" onclick="agregarFavorito('${peli.id}')">⭐ Favorita</button>
-                    </div>
-                </div>
-            </div>`;
+    peliculas.forEach(peli => {
+        contenedorCatalogo.innerHTML += generarHTMLTarjerta(peli, false);
     });
 }
 
-// Buscador
-buscador.addEventListener('input', (e) => {
-    const texto = e.target.value.toLowerCase();
-    const filtradas = todasLasPelis.filter(p => 
-        p.title.toLowerCase().includes(texto) || p.director.toLowerCase().includes(texto)
-    );
-    mostrarCatalogo(filtradas);
-});
+function mostrarAleatoria(peliculas) {
+    const indice = Math.floor(Math.random() * peliculas.length);
+    const peliSuerte = peliculas[indice];
+    contenedorAleatorio.innerHTML = generarHTMLTarjerta(peliSuerte, false);
+}
 
-// Aleatorio
-function mostrarAleatoria(lista) {
-    const peli = lista[Math.floor(Math.random() * lista.length)];
-    contenedorAleatorio.innerHTML = `
-        <div class="card shadow" style="width: 20rem;">
-            <img src="${peli.movie_banner}" class="card-img-top">
-            <div class="card-body">
-                <h6>${obtenerNombreMofa(peli.title)}</h6>
-                <button class="btn btn-sm btn-outline-warning" onclick="agregarFavorito('${peli.id}')">Añadir a favs</button>
+// Función unificada para generar HTML (Catálogo y Favoritos)
+function generarHTMLTarjerta(peli, esFavorito) {
+    const titulo = aplicarNombreMofa(peli.title);
+    
+    // Botón dinámico: si es favorita muestra "Quitar", si no "Favorita"
+    const btnAccion = esFavorito
+        ? `<button class="btn btn-danger btn-sm w-100" onclick="eliminarFavorito('${peli.id}')">Quitar</button>`
+        : `<button class="btn btn-warning btn-sm w-100 fw-bold" onclick="agregarFavorito('${peli.id}')">⭐ Favorita</button>`;
+
+    // Ajuste de tamaño para la sección de favoritos
+    const columnaClass = esFavorito ? "col-md-3" : "col-md-4 d-flex justify-content-center";
+    const estiloCard = esFavorito ? "" : "style='width: 18rem;'";
+
+    return `
+        <div class="${columnaClass}">
+            <div class="card" ${estiloCard}>
+                <img src="${peli.image}" class="card-img-top" alt="${titulo}">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">${titulo}</h5>
+                    <p class="card-text text-secondary small text-start">
+                        <strong>Director:</strong> ${peli.director}<br>
+                        <strong>Año:</strong> ${peli.release_date}<br>
+                        <span class="badge bg-warning text-dark mt-2">Rating: ${peli.rt_score}%</span>
+                    </p>
+                    <div class="mt-3">
+                        ${btnAccion}
+                    </div>
+                </div>
             </div>
         </div>`;
 }
 
-// Música
-const musica = document.getElementById('musicaGhibli');
-const btnMusica = document.getElementById('btnMusica');
-btnMusica.addEventListener('click', () => {
+// --- LÓGICA DE MÚSICA (Original) ---
+function toggleMusica() {
     if (musica.paused) {
         musica.play();
-        document.getElementById('iconoMusica').innerText = "🔊";
+        iconoMusica.innerText = "🔊";
+        btnMusica.classList.replace('btn-light', 'btn-warning');
     } else {
         musica.pause();
-        document.getElementById('iconoMusica').innerText = "muted";
+        iconoMusica.innerText = "🔈";
+        btnMusica.classList.replace('btn-warning', 'btn-light');
     }
-});
+}
 
-boton.addEventListener('click', () => mostrarAleatoria(todasLasPelis));
+function intentarReproducir() {
+    musica.play().catch(() => {
+        iconoMusica.innerText = "🔈";
+        btnMusica.classList.replace('btn-warning', 'btn-light');
+    });
+}
 
+btnMusica.addEventListener('click', toggleMusica);
+
+// Iniciar
 cargarContenido();
