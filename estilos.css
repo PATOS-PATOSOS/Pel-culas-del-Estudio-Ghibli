@@ -18,26 +18,60 @@ h1, h2, h3, .card-title, .intro-titulo {
     text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
 }
 
+/* Buscador Estilizado */
 #buscador {
     border-radius: 30px;
     border: 3px solid #ffc107;
     padding: 12px 25px;
 }
 
+/* Botón Música */
 #btnMusica {
-    width: 50px; height: 50px; font-size: 1.4rem;
-    display: flex; align-items: center; justify-content: center;
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Estilo específico para favoritos */
+.intro-titulo {
+    color: #2c3e50;
+    border-left: 5px solid #ffc107;
+    padding-left: 15px;
+}
+
+.intro-texto {
+    font-size: 1.1rem;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Sección Favoritos */
 #seccion-favoritos {
-    border: 2px solid #ffc107;
+    border: 3px solid #ffc107;
 }
 
+/* Tarjetas Generales */
 .card {
-    transition: transform 0.3s;
+    margin: 15px;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-10px);
+}
+
+.card-body {
+    background-color: #ffffff;
+}
+
+/* Ajuste para imágenes de tarjetas */
+.card-img-top {
+    height: 300px;
+    object-fit: cover;
 }
