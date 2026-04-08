@@ -16,46 +16,18 @@ h1, h2, h3, .card-title, .intro-titulo {
     font-weight: 700;
 }
 
-.text-white.shadow-lg {
-    text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
-}
-
 /* --- BUSCADOR --- */
 #buscador {
     border-radius: 30px;
     border: 3px solid #ffc107;
     padding: 12px 25px;
-    color: #333;
 }
 
-/* --- BOTÓN MÚSICA --- */
-#btnMusica {
-    width: 50px;
-    height: 50px;
-    font-size: 1.4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* --- SECCIÓN INTRO --- */
-.intro-titulo {
-    color: #2c3e50;
-    border-left: 5px solid #ffc107;
-    padding-left: 15px;
-}
-
-.intro-texto {
-    font-size: 1.1rem;
-    color: #333;
-    line-height: 1.6;
-}
-
-/* --- SECCIÓN FAVORITOS --- */
+/* --- SECCIÓN FAVORITOS (Inspirado en recetas) --- */
 #seccion-favoritos {
     border: 3px solid #ffc107;
-    background-color: rgba(248, 249, 250, 0.95);
-    margin-top: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 40px;
 }
 
 /* --- TARJETAS (CARTAS) --- */
@@ -63,8 +35,7 @@ h1, h2, h3, .card-title, .intro-titulo {
     margin: 15px;
     border: none;
     border-radius: 15px;
-    /* Evita que cualquier cosa dentro de la carta sobresalga */
-    overflow: hidden !important; 
+    overflow: hidden !important; /* Evita que la imagen se salga */
     box-shadow: 0 10px 25px rgba(0,0,0,0.4);
     transition: transform 0.3s ease;
     background-color: white;
@@ -74,39 +45,40 @@ h1, h2, h3, .card-title, .intro-titulo {
     transform: translateY(-10px);
 }
 
-/* --- EL CAMBIO CLAVE PARA QUE NO SE CORTE NADA --- */
+/* --- SOLUCIÓN PARA QUE NO SE CORTEN LAS FOTOS --- */
 .card-img-top {
-    display: block;
     width: 100% !important;
-    height: 400px !important;       /* Un poco más alto para que luzcan los pósters */
-    object-fit: contain !important; /* Muestra la imagen COMPLETA */
-    object-position: center !important; 
-    background-color: #ebebeb !important; /* Fondo neutro por si la peli es estrecha */
-    padding: 5px;                  /* Espacio de seguridad */
+    height: 400px !important;       /* Altura fija para que todas las cartas sean iguales */
+    object-fit: contain !important; /* ESTO HACE QUE SE VEA ENTERA SIEMPRE */
+    object-position: center !important;
+    background-color: #333 !important; /* Fondo oscuro para que los bordes queden elegantes */
+    padding: 0; 
+    display: block;
 }
 
 .card-body {
     background-color: #ffffff;
-    padding: 1rem;
-    border-top: 1px solid #eee;
+    padding: 1.25rem;
+    color: #333;
 }
 
 /* --- BOTONES --- */
 .btn-warning {
     background-color: #ffc107;
     border: none;
-    color: #000;
-    font-weight: 600;
+    font-weight: bold;
 }
 
 .btn-danger {
     background-color: #dc3545;
     border: none;
-    font-weight: 600;
+    font-weight: bold;
 }
 
-/* Separador */
-hr.border-white {
-    opacity: 0.6;
-    border-width: 2px;
+/* Botón Música */
+#btnMusica {
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+    z-index: 2000;
 }
